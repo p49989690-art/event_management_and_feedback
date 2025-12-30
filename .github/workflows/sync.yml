@@ -1,24 +1,24 @@
-name: Sync to Client Repo
-
-on:
-  push:
-    branches:
-      - main
+name: Debug Connection
+on: [push, workflow_dispatch]
 
 jobs:
-  sync:
+  debug_access:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - name: Test Connection
+        run: |
+          echo "1. Who am I trying to be?"
+          echo "User: Zikri809"
+          
+          echo "2. Checking if Token exists..."
+          if [ -z "${{ secrets.CLIENT_REPO_TOKEN }}" ]; then
+            echo "ERROR: The secret CLIENT_REPO_TOKEN is EMPTY. You didn't save it!"
+            exit 1
+          else
+            echo "SUCCESS: Token found (hidden)."
+          fi
 
-      - name: Push to Client Repo
-        uses: yesolutions/mirror-action@master
-        with:
-          REMOTE: 'https://github.com/p49989690-art/event_management_and_feedback.git'
-          GIT_USERNAME: 'Zikri809'
-          GIT_PASSWORD: ${{ secrets.CLIENT_REPO_TOKEN }}
-          PUSH_ALL_REFS: false
-          # Be careful with 'true' here, it will force push and wipe client history
-          # Only use this if the client repo is a strict mirror
+          echo "3. Testing Access to Client Repo..."
+          # We try to list the branches of the remote repo using the token
+          # If this fails, the Token is bad or the Invite is missing.
+          git ls-remote https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com/p49989690-art/event_management_and_feedback.git HEAD
