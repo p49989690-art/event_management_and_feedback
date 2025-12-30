@@ -1,4 +1,4 @@
-name: Sync to Client (Manual Force)
+name: Sync to Client (Robust Auth)
 
 on:
   push:
@@ -13,17 +13,26 @@ jobs:
       - name: Checkout Personal Repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # We need the whole history to merge properly
+          fetch-depth: 0
 
-      - name: Push to Client Repo
+      - name: Configure Git Credentials
         run: |
-          # 1. Define the Client URL using the secret directly
-          # This matches exactly what just worked in your debug test
-          CLIENT_URL="https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com/p49989690-art/event_management_and_feedback.git"
+          git config --global user.name "Zikri809"
+          git config --global user.email "your-email@student.uum.edu.my" # Optional, but good for logs
 
-          # 2. Add the client as a remote
+          # This line creates a credential rule. 
+          # Anytime git sees 'github.com', it uses your Token as the password.
+          git config --global credential.helper store
+          echo "https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com" > ~/.git-credentials
+
+      - name: Sync Push
+        run: |
+          # Notice: No token in the URL anymore. Pure and clean.
+          CLIENT_URL="https://github.com/p49989690-art/event_management_and_feedback.git"
+          
+          echo "Adding remote..."
           git remote add client_target "$CLIENT_URL"
-
-          # 3. Push your main branch to their main branch
-          # The --force is optional but ensures your version overwrites theirs if history drifted
+          
+          echo "Pushing code..."
+          # We force push to make sure their repo matches yours exactly
           git push client_target main --force
