@@ -45,10 +45,9 @@ export default function DashboardLayout({
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-black border-r dark:border-neutral-800 transform transition-transform duration-200 ease-in-out md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } md:flex flex-col pt-16 md:pt-0`}
+        className={`fixed inset-y-0 left-0 z-40 w-64 h-screen bg-white dark:bg-black border-r dark:border-neutral-800 transform transition-transform duration-200 ease-in-out md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } flex flex-col pt-16 md:pt-0`}
       >
         <div className="p-6 hidden md:block">
           <h2 className="text-xl font-bold dark:text-white">Event Management</h2>
@@ -73,20 +72,23 @@ export default function DashboardLayout({
           <div className="hidden md:block">
             <ThemeToggle />
           </div>
-          <form action={logout}>
+          <form action={logout} className="w-full">
             <Button
+              type="submit"
               variant="outline"
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+              className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 dark:border-neutral-700"
             >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
+              <div className="flex items-center gap-2 w-full">
+                <LogOut className="h-4 w-4" />
+                <span>Sign Out</span>
+              </div>
             </Button>
           </form>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 overflow-y-auto pt-20 md:pt-8 dark:bg-black">{children}</main>
+      <main className="flex-1 md:ml-64 p-4 md:p-8 overflow-y-auto pt-20 md:pt-8 min-h-screen dark:bg-black">{children}</main>
     </div>
   );
 }
