@@ -1,0 +1,24 @@
+name: Sync to Client Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Push to Client Repo
+        uses: yesolutions/mirror-action@master
+        with:
+          REMOTE: 'https://github.com/p49989690-art/event_management_and_feedback.git'
+          GIT_USERNAME: 'Zikri809'
+          GIT_PASSWORD: ${{ secrets.CLIENT_REPO_TOKEN }}
+          PUSH_ALL_REFS: false
+          # Be careful with 'true' here, it will force push and wipe client history
+          # Only use this if the client repo is a strict mirror
