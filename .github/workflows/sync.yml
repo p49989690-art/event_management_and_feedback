@@ -1,24 +1,29 @@
-name: Debug Connection
-on: [push, workflow_dispatch]
+name: Sync to Client (Manual Force)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  debug_access:
+  sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Test Connection
-        run: |
-          echo "1. Who am I trying to be?"
-          echo "User: Zikri809"
-          
-          echo "2. Checking if Token exists..."
-          if [ -z "${{ secrets.CLIENT_REPO_TOKEN }}" ]; then
-            echo "ERROR: The secret CLIENT_REPO_TOKEN is EMPTY. You didn't save it!"
-            exit 1
-          else
-            echo "SUCCESS: Token found (hidden)."
-          fi
+      - name: Checkout Personal Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # We need the whole history to merge properly
 
-          echo "3. Testing Access to Client Repo..."
-          # We try to list the branches of the remote repo using the token
-          # If this fails, the Token is bad or the Invite is missing.
-          git ls-remote https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com/p49989690-art/event_management_and_feedback.git HEAD
+      - name: Push to Client Repo
+        run: |
+          # 1. Define the Client URL using the secret directly
+          # This matches exactly what just worked in your debug test
+          CLIENT_URL="https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com/p49989690-art/event_management_and_feedback.git"
+
+          # 2. Add the client as a remote
+          git remote add client_target "$CLIENT_URL"
+
+          # 3. Push your main branch to their main branch
+          # The --force is optional but ensures your version overwrites theirs if history drifted
+          git push client_target main --force
