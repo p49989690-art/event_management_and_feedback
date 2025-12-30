@@ -17,7 +17,7 @@ jobs:
         uses: yesolutions/mirror-action@master
         with:
           REMOTE: 'https://github.com/p49989690-art/event_management_and_feedback.git'
-          GIT_USERNAME: 'Zikri809'
+          GIT_USERNAME: 'p49989690-art'
           GIT_PASSWORD: ${{ secrets.CLIENT_REPO_TOKEN }}
           PUSH_ALL_REFS: false
           # Be careful with 'true' here, it will force push and wipe client history
