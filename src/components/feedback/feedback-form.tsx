@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import {
   feedbackSchema,
   type FeedbackFormData,
@@ -31,27 +32,29 @@ export function FeedbackForm({ eventId, onSubmit }: FeedbackFormProps) {
   const {
     register,
     handleSubmit,
-    control, // Use control for Select and manually handle rating if needed
+    control,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<FeedbackFormData>({
     resolver: zodResolver(feedbackSchema),
     defaultValues: {
       event_id: eventId,
-      rating: 0, // Should be handled carefully with validation
+      rating: 0,
       is_anonymous: false,
     },
   });
-
-  // Register rating manually since it's a custom UI
-  // register('rating') - but we need to set value
 
   const onSubmitForm = async (data: FeedbackFormData) => {
     setIsSubmitting(true);
     try {
       await onSubmit(data);
+      toast.success("Thank you! Your feedback has been submitted.");
+      reset();
+      setRating(0);
     } catch (error) {
       console.error("Error submitting feedback:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to submit feedback");
     } finally {
       setIsSubmitting(false);
     }

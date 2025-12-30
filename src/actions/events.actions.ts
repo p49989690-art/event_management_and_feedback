@@ -24,6 +24,8 @@ export async function createEvent(data: EventFormData) {
   // Validate data
   const validated = eventSchema.parse(data);
 
+  console.log("Creating event for user:", user.id);
+
   // Insert event
   const { data: event, error } = await supabase
     .from("events")
@@ -36,7 +38,10 @@ export async function createEvent(data: EventFormData) {
     .single();
 
   if (error) {
-    throw new Error(`Failed to create event: ${error.message}`);
+    console.error('Create event error:', error);
+    // throw new Error(`Failed to create event: ${error.message}`);
+    // Instead of throwing, for now let's throw to keep signature but logging better
+    throw new Error(error.message);
   }
 
   revalidatePath("/events");

@@ -9,18 +9,19 @@ import { ChevronLeft } from "lucide-react";
 export default async function EventFeedbackPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const [event, feedback] = await Promise.all([
-    getEvent(params.id),
-    getFeedbackByEvent(params.id),
+    getEvent(id),
+    getFeedbackByEvent(id),
   ]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={`/events/${params.id}`}>
+          <Link href={`/events/${id}`}>
             <ChevronLeft className="h-4 w-4" />
           </Link>
         </Button>

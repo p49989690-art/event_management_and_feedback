@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { signup } from "@/actions/auth.actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Link from 'next/link'
+import { signup } from '@/actions/auth.actions'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Card,
   CardContent,
@@ -10,13 +10,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card'
 
-export default function RegisterPage({
+export default async function RegisterPage({
   searchParams,
 }: {
-  searchParams: { message: string; error: string };
+  searchParams: Promise<{ message?: string; error?: string }>
 }) {
+  const params = await searchParams
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -30,14 +32,14 @@ export default function RegisterPage({
         </CardHeader>
         <form action={signup}>
           <CardContent className="space-y-4">
-            {searchParams.message && (
+            {params.message && (
               <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
-                {searchParams.message}
+                {params.message}
               </div>
             )}
-            {searchParams.error && (
+            {params.error && (
               <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-                {searchParams.error}
+                {params.error}
               </div>
             )}
             <div className="space-y-2">
@@ -55,12 +57,12 @@ export default function RegisterPage({
               <Input id="password" name="password" type="password" required />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-4 pt-4">
             <Button className="w-full" type="submit">
               Sign Up
             </Button>
             <div className="text-center text-sm">
-              Already have an account?{" "}
+              Already have an account?{' '}
               <Link href="/login" className="underline">
                 Sign in
               </Link>
@@ -69,5 +71,5 @@ export default function RegisterPage({
         </form>
       </Card>
     </div>
-  );
+  )
 }

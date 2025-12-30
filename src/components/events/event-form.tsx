@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import {
   eventSchema,
   type EventFormData,
@@ -49,8 +50,10 @@ export function EventForm({
     setIsSubmitting(true);
     try {
       await onSubmit(data);
+      toast.success(isEditing ? "Event updated successfully!" : "Event created successfully!");
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to save event");
     } finally {
       setIsSubmitting(false);
     }
@@ -149,17 +152,42 @@ export function EventForm({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="max_attendees">Maximum Attendees</Label>
-        <Input
-          id="max_attendees"
-          type="number"
-          {...register("max_attendees", { valueAsNumber: true })}
-          placeholder="Leave empty for unlimited"
-        />
-        {errors.max_attendees && (
-          <p className="text-sm text-red-500">{errors.max_attendees.message}</p>
-        )}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="status">Status</Label>
+          <Controller
+            control={control}
+            name="status"
+            defaultValue="draft"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="max_attendees">Maximum Attendees</Label>
+          <Input
+            id="max_attendees"
+            type="number"
+            {...register("max_attendees", { valueAsNumber: true })}
+            placeholder="Leave empty for unlimited"
+          />
+          {errors.max_attendees && (
+            <p className="text-sm text-red-500">{errors.max_attendees.message}</p>
+          )}
+        </div>
+
       </div>
 
       <Button type="submit" disabled={isSubmitting} className="w-full">
@@ -169,6 +197,6 @@ export function EventForm({
             ? "Update Event"
             : "Create Event"}
       </Button>
-    </form>
+    </form >
   );
 }

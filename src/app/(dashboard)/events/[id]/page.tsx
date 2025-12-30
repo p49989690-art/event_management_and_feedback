@@ -8,9 +8,10 @@ import type { EventFormData } from "@/lib/validations/event.schema";
 export default async function EventDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const event = await getEvent(params.id);
+  const { id } = await params;
+  const event = await getEvent(id);
 
   // Map DB event to form data type
   const formData: EventFormData = {
@@ -34,6 +35,19 @@ export default async function EventDetailsPage({
           </Link>
         </Button>
         <h1 className="text-3xl font-bold">Event Details</h1>
+      </div>
+
+      <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border">
+        <div>
+          <h3 className="font-medium">Public Feedback Link</h3>
+          <p className="text-sm text-gray-500">Share this link with attendees (no login required)</p>
+          <code className="text-xs bg-gray-200 px-2 py-1 rounded select-all block mt-1">
+            {`/event-feedback/${event.id}`}
+          </code>
+        </div>
+        <Button asChild variant="outline">
+          <Link href={`/event-feedback/${event.id}`} target="_blank">Open Link</Link>
+        </Button>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-sm border">
