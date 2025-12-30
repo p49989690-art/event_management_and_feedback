@@ -24,7 +24,7 @@ jobs:
           # 2. DELETE THE EVIDENCE
           # (-r = recursive for folders, -f = force/no error if missing)
           echo "Scrubbing internal files..."
-          rm -rf Planned
+          rm -rf planned
           rm -rf .github/workflows/sync.yml
 
           # 3. Update Git History
