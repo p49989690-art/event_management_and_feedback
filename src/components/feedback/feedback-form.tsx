@@ -9,6 +9,7 @@ import {
   type FeedbackFormData,
 } from "@/lib/validations/feedback.schema";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -85,6 +86,20 @@ export function FeedbackForm({ eventId, onSubmit }: FeedbackFormProps) {
         </div>
         {errors.rating && (
           <p className="text-sm text-red-500">{errors.rating.message}</p>
+        )}
+      </div>
+
+      {/* Name */}
+      <div className="space-y-2">
+        <Label htmlFor="name">Your Name (Optional)</Label>
+        <Input
+          id="name"
+          {...register("name")}
+          placeholder="Enter your name"
+          className="dark:bg-neutral-900 dark:border-neutral-700"
+        />
+        {errors.name && (
+          <p className="text-sm text-red-500">{errors.name.message}</p>
         )}
       </div>
 

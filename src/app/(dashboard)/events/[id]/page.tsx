@@ -1,8 +1,10 @@
 import { getEvent, updateEvent, deleteEvent } from "@/actions/events.actions";
 import { EventForm } from "@/components/events/event-form";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { CopyLinkButton } from "@/components/copy-link-button";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Trash2 } from "lucide-react";
 import type { EventFormData } from "@/lib/validations/event.schema";
 
 export default async function EventDetailsPage({
@@ -34,23 +36,26 @@ export default async function EventDetailsPage({
             <ChevronLeft className="h-4 w-4" />
           </Link>
         </Button>
-        <h1 className="text-3xl font-bold">Event Details</h1>
+        <h1 className="text-3xl font-bold dark:text-white">Event Details</h1>
       </div>
 
-      <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 dark:bg-neutral-900 p-4 rounded-lg border dark:border-neutral-800">
         <div>
-          <h3 className="font-medium">Public Feedback Link</h3>
-          <p className="text-sm text-gray-500">Share this link with attendees (no login required)</p>
-          <code className="text-xs bg-gray-200 px-2 py-1 rounded select-all block mt-1">
+          <h3 className="font-medium dark:text-white">Public Feedback Link</h3>
+          <p className="text-sm text-gray-500 dark:text-neutral-400">Share this link with attendees (no login required)</p>
+          <code className="text-xs bg-gray-200 dark:bg-neutral-800 px-2 py-1 rounded select-all block mt-1 dark:text-neutral-300">
             {`/event-feedback/${event.id}`}
           </code>
         </div>
-        <Button asChild variant="outline">
-          <Link href={`/event-feedback/${event.id}`} target="_blank">Open Link</Link>
-        </Button>
+        <div className="flex gap-2">
+          <CopyLinkButton link={`/event-feedback/${event.id}`} />
+          <Button asChild variant="outline" className="dark:border-neutral-700">
+            <Link href={`/event-feedback/${event.id}`} target="_blank">Open Link</Link>
+          </Button>
+        </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="bg-white dark:bg-neutral-900 p-6 rounded-lg shadow-sm border dark:border-neutral-800">
         <EventForm
           initialData={formData}
           onSubmit={updateEvent.bind(null, event.id)}
@@ -60,9 +65,13 @@ export default async function EventDetailsPage({
 
       <div className="flex justify-end pt-4">
         <form action={deleteEvent.bind(null, event.id)}>
-          <Button variant="destructive" type="submit">
+          <SubmitButton
+            className="bg-red-600 hover:bg-red-700 text-white"
+            loadingText="Deleting..."
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
             Delete Event
-          </Button>
+          </SubmitButton>
         </form>
       </div>
     </div>

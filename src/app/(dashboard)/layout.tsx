@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/actions/auth.actions";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Calendar, MessageSquare, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 
 export default function DashboardLayout({
@@ -13,12 +15,20 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/events", icon: Calendar, label: "Events" },
     { href: "/feedback", icon: MessageSquare, label: "Feedback" },
   ];
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-black">
@@ -52,13 +62,16 @@ export default function DashboardLayout({
         <div className="p-6 hidden md:block">
           <h2 className="text-xl font-bold dark:text-white">Event Management</h2>
         </div>
-        <nav className="flex-1 px-4 space-y-2 mt-4 md:mt-0">
+        <nav className="flex-1 px-4 space-y-1 mt-4 md:mt-0">
           {navItems.map((item) => (
             <Button
               key={item.href}
               asChild
-              variant="ghost"
-              className="w-full justify-start dark:text-neutral-200 dark:hover:bg-neutral-900"
+              variant={isActive(item.href) ? "secondary" : "ghost"}
+              className={`w-full justify-start ${isActive(item.href)
+                  ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium"
+                  : "dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white"
+                }`}
               onClick={() => setSidebarOpen(false)}
             >
               <Link href={item.href}>
@@ -73,16 +86,13 @@ export default function DashboardLayout({
             <ThemeToggle />
           </div>
           <form action={logout} className="w-full">
-            <Button
-              type="submit"
-              variant="outline"
-              className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 dark:border-neutral-700"
+            <SubmitButton
+              className="w-full !justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 dark:border-neutral-700 border bg-transparent"
+              loadingText="Signing out..."
             >
-              <div className="flex items-center gap-2 w-full">
-                <LogOut className="h-4 w-4" />
-                <span>Sign Out</span>
-              </div>
-            </Button>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </SubmitButton>
           </form>
         </div>
       </aside>

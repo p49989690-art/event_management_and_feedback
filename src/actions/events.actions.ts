@@ -105,7 +105,10 @@ export async function deleteEvent(id: string) {
     throw new Error(`Failed to delete event: ${error.message}`);
   }
 
+  // Revalidate all affected paths
   revalidatePath("/events");
+  revalidatePath("/dashboard");
+  revalidatePath("/feedback");
   redirect("/events");
 }
 

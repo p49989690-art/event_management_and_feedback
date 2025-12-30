@@ -11,7 +11,9 @@ export const feedbackSchema = z.object({
     .min(10, "Feedback must be at least 10 characters")
     .max(1000)
     .optional(),
+  name: z.string().max(100).optional(),
   is_anonymous: z.boolean().default(false).optional(),
 });
 
 export type FeedbackFormData = z.infer<typeof feedbackSchema>;
+

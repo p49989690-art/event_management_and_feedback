@@ -7,8 +7,8 @@ export default async function FeedbackPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">All Feedback</h1>
-        <p className="text-gray-500">
+        <h1 className="text-3xl font-bold dark:text-white">All Feedback</h1>
+        <p className="text-gray-500 dark:text-neutral-400">
           Overview of all feedback received across events.
         </p>
       </div>
