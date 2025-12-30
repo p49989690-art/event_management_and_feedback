@@ -1,0 +1,19 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Run at 00:00 on Monday and Thursday (twice a week to be safe)
+    - cron: '0 0 * * 1,4'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          # Pings the Supabase REST API to prevent project pausing due to inactivity.
+          # Requires SUPABASE_URL and SUPABASE_KEY to be set in Repository Secrets.
+          curl -s "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}"
