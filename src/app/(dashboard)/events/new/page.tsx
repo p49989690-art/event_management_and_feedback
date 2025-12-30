@@ -10,7 +10,7 @@ export default function NewEventPage() {
           Fill in the details to create a new event.
         </p>
       </div>
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="bg-card text-card-foreground p-6 rounded-lg shadow-sm border">
         <EventForm onSubmit={createEvent} />
       </div>
     </div>
