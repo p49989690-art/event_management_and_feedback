@@ -1,4 +1,4 @@
-name: Sync to Client (Robust Auth)
+name: Sync to Client (The Final Fix)
 
 on:
   push:
@@ -14,25 +14,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          persist-credentials: false # <--- THIS IS THE MAGIC FIX. Kills the bot login.
 
-      - name: Configure Git Credentials
+      - name: Push to Client Repo
         run: |
-          git config --global user.name "Zikri809"
-          git config --global user.email "your-email@student.uum.edu.my" # Optional, but good for logs
+          # 1. We construct the URL with the token explicitly
+          # Since the bot credentials are gone, Git has no choice but to use this.
+          TARGET_URL="https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com/p49989690-art/event_management_and_feedback.git"
 
-          # This line creates a credential rule. 
-          # Anytime git sees 'github.com', it uses your Token as the password.
-          git config --global credential.helper store
-          echo "https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com" > ~/.git-credentials
-
-      - name: Sync Push
-        run: |
-          # Notice: No token in the URL anymore. Pure and clean.
-          CLIENT_URL="https://github.com/p49989690-art/event_management_and_feedback.git"
-          
-          echo "Adding remote..."
-          git remote add client_target "$CLIENT_URL"
-          
-          echo "Pushing code..."
-          # We force push to make sure their repo matches yours exactly
-          git push client_target main --force
+          echo "Pushing to client repo..."
+          git push "$TARGET_URL" main --force
