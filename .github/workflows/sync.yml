@@ -1,4 +1,4 @@
-name: Sync to Client (The Final Fix)
+name: Sync to Client (Sanitized)
 
 on:
   push:
@@ -14,13 +14,30 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          persist-credentials: false # <--- THIS IS THE MAGIC FIX. Kills the bot login.
+          persist-credentials: false # Kills the bot login so we can use yours
 
-      - name: Push to Client Repo
+      - name: Sanitize and Push
         run: |
-          # 1. We construct the URL with the token explicitly
-          # Since the bot credentials are gone, Git has no choice but to use this.
+          # 1. Define the Target
           TARGET_URL="https://Zikri809:${{ secrets.CLIENT_REPO_TOKEN }}@github.com/p49989690-art/event_management_and_feedback.git"
 
-          echo "Pushing to client repo..."
+          # 2. DELETE THE EVIDENCE
+          # (-r = recursive for folders, -f = force/no error if missing)
+          echo "Scrubbing internal files..."
+          rm -rf Planned
+          rm -rf .github/workflows/sync.yml
+
+          # 3. Update Git History
+          # We must configure a dummy user to allow the commit amend
+          git config --global user.email "zikri809@users.noreply.github.com"
+          git config --global user.name "Zikri809"
+          
+          # Stage the deletions so Git knows they are gone
+          git add -u
+          
+          # Rewrite the last commit to include these deletions
+          git commit --amend --no-edit --allow-empty
+
+          # 4. Push the Clean Version
+          echo "Pushing sanitized code to client..."
           git push "$TARGET_URL" main --force
