@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/actions/auth.actions";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Calendar, MessageSquare, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import { LoadingPopup } from "@/components/ui/loading-popup";
 
 export default function DashboardLayout({
   children,
@@ -15,7 +16,12 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [pathname]);
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -32,6 +38,9 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-black">
+      {/* Loading Popup */}
+      {isLoading && <LoadingPopup />}
+
       {/* Mobile Header */}
       <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between p-4 bg-white dark:bg-black border-b dark:border-neutral-800 md:hidden">
         <h2 className="text-lg font-bold dark:text-white">Event Management</h2>
@@ -69,10 +78,15 @@ export default function DashboardLayout({
               asChild
               variant={isActive(item.href) ? "secondary" : "ghost"}
               className={`w-full justify-start ${isActive(item.href)
-                  ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium"
-                  : "dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white"
+                ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium"
+                : "dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white"
                 }`}
-              onClick={() => setSidebarOpen(false)}
+              onClick={(e) => {
+                setSidebarOpen(false);
+                if (item.href !== pathname) {
+                  setIsLoading(true);
+                }
+              }}
             >
               <Link href={item.href}>
                 <item.icon className="mr-2 h-4 w-4" />
@@ -98,7 +112,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 p-4 md:p-8 overflow-y-auto pt-20 md:pt-8 min-h-screen dark:bg-black">{children}</main>
+      <main className="flex-1 md:ml-64 p-4 md:p-8 overflow-y-auto pt-20 md:pt-8 min-h-screen dark:bg-black w-full">{children}</main>
     </div>
   );
 }
