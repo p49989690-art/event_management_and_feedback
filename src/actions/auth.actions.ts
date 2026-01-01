@@ -25,27 +25,9 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
-  // Determine redirect URL from environment variable or fallback to NODE_ENV check
-  const getRedirectUrl = () => {
-    // Use explicit app URL if set (recommended for production)
-    if (process.env.NEXT_PUBLIC_APP_URL) {
-      return `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`;
-    }
-    
-    // Fallback to NODE_ENV check
-    if (process.env.NODE_ENV === 'production') {
-      return 'https://event-management-and-feedback.vercel.app/auth/callback';
-    }
-    
-    return 'http://localhost:3000/auth/callback';
-  };
-
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
-    options: {
-      emailRedirectTo: getRedirectUrl(),
-    },
   };
 
   const { error } = await supabase.auth.signUp(data);
@@ -55,7 +37,7 @@ export async function signup(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/login?message=Check email to continue sign in process");
+  redirect("/login?message=Account created successfully! Please login.");
 }
 
 export async function logout() {

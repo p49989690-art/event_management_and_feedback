@@ -9,6 +9,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
+    "cleanup-user": "node scripts/cleanup-user.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
