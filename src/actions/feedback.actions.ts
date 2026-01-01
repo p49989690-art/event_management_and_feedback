@@ -54,6 +54,7 @@ export async function createFeedback(data: FeedbackFormData) {
     data: { user },
   } = await supabase.auth.getUser();
 
+
   if (!user && !data.is_anonymous) {
     throw new Error("Unauthorized");
   }
@@ -68,28 +69,94 @@ export async function createFeedback(data: FeedbackFormData) {
   }
 
   // Insert feedback
+  const insertPayload = {
+    ...validated,
+    is_anonymous: !!data.is_anonymous, // Ensure boolean
+    user_id: data.is_anonymous ? null : user?.id,
+    sentiment,
+    ai_analysis: null, // AI removed
+  };
+
   const { data: feedback, error } = await supabase
     .from("feedback")
-    .insert({
-      ...validated,
-      user_id: data.is_anonymous ? null : user?.id,
-      sentiment,
-      ai_analysis: null, // AI removed
-    })
+    .insert(insertPayload)
     .select()
     .single();
 
   if (error) {
-    throw new Error(`Failed to create feedback: ${error.message}`);
+    console.error("Feedback creation error:", error);
+    throw new Error(`Failed to create feedback: ${error.message} (Code: ${error.code})`);
   }
 
+  revalidatePath(`/events/${validated.event_id}`);
+  
   // Refresh analytics
   await supabase.rpc("refresh_feedback_analytics");
-
-  revalidatePath(`/events/${validated.event_id}`);
-  revalidatePath("/feedback");
-
+  
   return feedback;
+}
+
+export async function submitFeedbackBatch(
+  commonData: {
+    event_id: string;
+    name?: string;
+    is_anonymous?: boolean;
+    user_id?: string;
+  },
+  items: Array<{
+    category: string;
+    rating: number;
+    comment?: string;
+  }>
+) {
+  const supabase = await createClient();
+
+  // Validate user if not anonymous
+  // (Logic similar to single create)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user && !commonData.is_anonymous) {
+    throw new Error("Unauthorized");
+  }
+
+  // Prepare payloads with sentiment analysis
+  const payloads = await Promise.all(
+    items.map(async (item) => {
+      let sentiment = "neutral";
+      if (item.comment && item.comment.length > 0) {
+        sentiment = calculateBasicSentiment(item.comment);
+      }
+
+      return {
+        event_id: commonData.event_id,
+        name: commonData.name,
+        is_anonymous: !!commonData.is_anonymous,
+        user_id: commonData.is_anonymous ? null : user?.id,
+        category: item.category,
+        rating: item.rating,
+        comment: item.comment,
+        sentiment,
+        ai_analysis: null,
+      };
+    })
+  );
+
+  const { data, error } = await supabase
+    .from("feedback")
+    .insert(payloads)
+    .select();
+
+  if (error) {
+    console.error("Batch feedback error:", error);
+    throw new Error(`Failed to submit feedback: ${error.message}`);
+  }
+
+  revalidatePath(`/events/${commonData.event_id}`);
+  await supabase.rpc("refresh_feedback_analytics");
+
+  return data;
 }
 
 export async function getFeedbackByEvent(eventId: string) {

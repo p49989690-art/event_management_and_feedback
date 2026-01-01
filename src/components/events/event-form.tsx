@@ -43,6 +43,7 @@ export function EventForm({
     defaultValues: initialData || {
       event_type: "conference",
       status: "draft",
+      target_audience: "all",
     },
   });
 
@@ -188,6 +189,29 @@ export function EventForm({
           )}
         </div>
 
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="target_audience">Target Audience</Label>
+        <Controller
+          control={control}
+          name="target_audience"
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select target audience" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All (Students & Staff)</SelectItem>
+                <SelectItem value="uum_student">UUM Student</SelectItem>
+                <SelectItem value="uum_staff">UUM Staff</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.target_audience && (
+          <p className="text-sm text-red-500">{errors.target_audience.message}</p>
+        )}
       </div>
 
       <Button type="submit" disabled={isSubmitting} className="w-full">

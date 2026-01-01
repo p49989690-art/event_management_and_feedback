@@ -18,6 +18,7 @@ export const eventSchema = z
     max_attendees: z.number().int().positive().optional(),
     status: z.enum(["draft", "published", "cancelled", "completed"]).optional(),
     image_url: z.string().url().optional(),
+    target_audience: z.enum(["uum_student", "uum_staff", "all"]),
   })
   .refine((data) => new Date(data.end_date) >= new Date(data.start_date), {
     message: "End date must be after start date",

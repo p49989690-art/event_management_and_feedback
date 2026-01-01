@@ -22,6 +22,7 @@ export type Database = {
           max_attendees: number | null
           start_date: string
           status: string | null
+          target_audience: string
           title: string
           updated_at: string | null
         }
@@ -37,6 +38,7 @@ export type Database = {
           max_attendees?: number | null
           start_date: string
           status?: string | null
+          target_audience?: string
           title: string
           updated_at?: string | null
         }
@@ -52,6 +54,7 @@ export type Database = {
           max_attendees?: number | null
           start_date?: string
           status?: string | null
+          target_audience?: string
           title?: string
           updated_at?: string | null
         }

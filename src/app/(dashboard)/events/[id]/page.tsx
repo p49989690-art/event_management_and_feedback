@@ -26,6 +26,7 @@ export default async function EventDetailsPage({
     max_attendees: event.max_attendees || undefined,
     status: event.status as EventFormData['status'],
     image_url: event.image_url || undefined,
+    target_audience: (event.target_audience || 'all') as EventFormData['target_audience'],
   };
 
   return (
