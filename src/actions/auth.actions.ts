@@ -25,15 +25,18 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
-  // Determine redirect URL based on environment
-  // On Vercel, use VERCEL_URL; otherwise fallback to localhost
+  // Determine redirect URL from environment variable or fallback to NODE_ENV check
   const getRedirectUrl = () => {
-    const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL;
-    if (vercelUrl) {
-      // Vercel URL is provided without protocol
-      return `https://${vercelUrl}/auth/callback`;
+    // Use explicit app URL if set (recommended for production)
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      return `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`;
     }
-    // Fallback to localhost for local development
+    
+    // Fallback to NODE_ENV check
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://event-management-and-feedback.vercel.app/auth/callback';
+    }
+    
     return 'http://localhost:3000/auth/callback';
   };
 
