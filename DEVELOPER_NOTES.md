@@ -27,3 +27,12 @@
 - **Draft/Cancelled**: Events with status `draft` or `cancelled` are hidden from public views by RLS. Attempting to access them as an unauthenticated user will result in a 404/Empty state.
 - **Policy**: The RLS policy on `public.events` is named `"Anyone can view published events"` and explicitly checks `status IN ('published', 'completed')`.
 
+
+## 6. Feedback Display UI
+- **Requirement**: The `FeedbackList` component **MUST** group individual feedback rows into single "Submission Cards".
+- **Logic**: Prefer using `submission_id` as the grouping key (added via migration), or fallback to composite key.
+- **Why**: The database stores 1 row per category. Displaying them as separate cards clutters the UI.
+
+## 7. Dashboard Metrics
+- **Total Feedback**: Must display the count of **unique submissions**, not total rows.
+- **Implementation**: Uses `get_unique_feedback_count` RPC function which counts distinct `submission_id`.

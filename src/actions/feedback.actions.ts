@@ -73,6 +73,7 @@ export async function createFeedback(data: FeedbackFormData) {
     ...validated,
     is_anonymous: !!data.is_anonymous, // Ensure boolean
     user_id: data.is_anonymous ? null : user?.id,
+    submission_id: crypto.randomUUID(),
     sentiment,
     ai_analysis: null, // AI removed
   };
@@ -125,6 +126,8 @@ export async function submitFeedbackBatch(
   }
 
   // Prepare payloads with sentiment analysis
+  const submissionId = crypto.randomUUID();
+  
   const payloads = await Promise.all(
     items.map(async (item) => {
       let sentiment = "neutral";
@@ -136,9 +139,8 @@ export async function submitFeedbackBatch(
         event_id: commonData.event_id,
         name: commonData.name,
         is_anonymous: !!commonData.is_anonymous,
-        // If logged in, use ID. If not, null.
-        // Even if is_anonymous is false (user provided name), if they aren't logged in, user_id is null.
         user_id: user?.id || null, 
+        submission_id: submissionId, // Grouping key
         category: item.category,
         rating: item.rating,
         comment: item.comment,

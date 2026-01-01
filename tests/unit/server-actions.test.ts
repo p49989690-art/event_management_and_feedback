@@ -155,11 +155,14 @@ describe("Server Actions Security & Logic", () => {
 
           await expect(submitFeedbackBatch(commonData, items)).resolves.not.toThrow();
           
-          // Verify insert payload has user_id: null
-          // The first argument to insert is an array of objects
+          // Verify insert payload has user_id: null and valid submission_id
           const insertCall = mockInsert.mock.calls[0][0]; 
           expect(insertCall[0].user_id).toBeNull();
           expect(insertCall[0].is_anonymous).toBe(false);
+          
+          // Verify submission_id is generated and consistent
+          expect(insertCall[0].submission_id).toBeDefined();
+          expect(insertCall[0].submission_id).toBe(insertCall[insertCall.length - 1].submission_id);
       });
   });
 });

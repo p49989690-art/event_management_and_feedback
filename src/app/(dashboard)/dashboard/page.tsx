@@ -5,7 +5,7 @@ import { AnalyticsChart } from "@/components/dashboard/analytics-chart";
 import { RecentFeedback } from "@/components/dashboard/recent-feedback";
 import { EventOverview } from "@/components/dashboard/event-overview";
 
-async function getDashboardData() {
+export async function getDashboardData() {
   const supabase = await createClient();
 
   const {
@@ -40,12 +40,9 @@ async function getDashboardData() {
         .eq("created_by", user.id),
 
       // Filter total feedback to only my events
-      // Since supabase doesn't support complex joins in count easily without RPC or standard joins,
-      // we can use the `in` filter matching event_id. 
-      // If eventIds is empty, we must handle it (empty array in .in() might error or return empty, usually error if empty list).
-      eventIds.length > 0
-        ? supabase.from("feedback").select("*", { count: "exact", head: true }).in("event_id", eventIds)
-        : { count: 0 },
+      // Filter total feedback by unique submission (using RPC)
+      // @ts-ignore
+      supabase.rpc("get_unique_feedback_count", { uid: user.id }),
 
       // Filter analytics to my events
       eventIds.length > 0
@@ -75,7 +72,7 @@ async function getDashboardData() {
 
   return {
     totalEvents: eventsCount.count || 0,
-    totalFeedback: feedbackCount.count || 0,
+    totalFeedback: (feedbackCount.data as unknown as number) || 0,
     topEvents: analytics.data || [],
     recentFeedback: recentFeedback.data || [],
   };
