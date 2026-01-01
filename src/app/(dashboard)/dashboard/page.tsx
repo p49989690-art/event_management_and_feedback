@@ -54,10 +54,11 @@ export async function getDashboardData() {
           .limit(5)
         : { data: [] },
 
-      // Filter recent feedback to my events
+      // Filter recent feedback to my events (unique submissions only)
       eventIds.length > 0
         ? supabase
-          .from("feedback")
+          // @ts-ignore - View not in generated types yet
+          .from("recent_feedback_submissions")
           .select(
             `
                 *,

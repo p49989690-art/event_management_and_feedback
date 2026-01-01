@@ -39,7 +39,7 @@ export function FeedbackForm({ eventId }: FeedbackFormProps) {
   });
 
   // Global state for name/anon
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {
       name: "",
       is_anonymous: false,
@@ -115,13 +115,14 @@ export function FeedbackForm({ eventId }: FeedbackFormProps) {
       {/* Global Info */}
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="name">Your Name (Optional)</Label>
+          <Label htmlFor="name">Your Name <span className="text-red-500">*</span></Label>
           <Input
             id="name"
-            {...register("name")}
+            {...register("name", { required: "Name is required" })}
             placeholder="Enter your name"
             className="dark:bg-neutral-900 dark:border-neutral-700"
           />
+          {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
         </div>
 
         <div className="flex items-center gap-2 h-full pt-6">

@@ -15,15 +15,15 @@ export function RecentFeedback({ feedback }: { feedback: any[] }) {
                 <AvatarFallback>
                   {item.is_anonymous
                     ? "A"
-                    : item.profiles?.full_name?.[0] || "U"}
+                    : (item.profiles?.full_name?.[0] || item.name?.[0] || "U")}
                 </AvatarFallback>
               </Avatar>
               <div className="ml-4 space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {item.is_anonymous ? "Anonymous" : item.profiles?.full_name}
+                  {item.is_anonymous ? "Anonymous" : (item.profiles?.full_name || item.name || "Unknown")}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {item.comment?.substring(0, 50)}...
+                  {item.comment?.substring(0, 50)}{item.comment?.length > 50 ? "..." : ""}
                 </p>
               </div>
               <div className="ml-auto font-medium">{item.rating} ★</div>
