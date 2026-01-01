@@ -65,13 +65,13 @@ export default function DashboardLayout({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 h-screen bg-white dark:bg-black border-r dark:border-neutral-800 transform transition-transform duration-200 ease-in-out md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-50 w-64 h-[100dvh] bg-white dark:bg-black border-r dark:border-neutral-800 transform transition-transform duration-200 ease-in-out md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } flex flex-col pt-16 md:pt-0`}
       >
         <div className="p-6 hidden md:block">
           <h2 className="text-xl font-bold dark:text-white">Event Management</h2>
         </div>
-        <nav className="flex-1 px-4 space-y-1 mt-4 md:mt-0">
+        <nav className="flex-1 px-4 space-y-1 mt-4 md:mt-0 overflow-y-auto">
           {navItems.map((item) => (
             <Button
               key={item.href}
@@ -95,7 +95,7 @@ export default function DashboardLayout({
             </Button>
           ))}
         </nav>
-        <div className="p-4 border-t dark:border-neutral-800 space-y-2">
+        <div className="p-4 border-t dark:border-neutral-800 space-y-2 mb-8 md:mb-0">
           <div className="hidden md:block">
             <ThemeToggle />
           </div>
