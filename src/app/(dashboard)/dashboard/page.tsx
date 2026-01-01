@@ -23,29 +23,54 @@ async function getDashboardData() {
   }
 
   // Get stats
+  // First, get all event IDs created by the user to filter other data
+  const { data: userEvents } = await supabase
+    .from("events")
+    .select("id")
+    .eq("created_by", user.id);
+
+  const eventIds = userEvents?.map(e => e.id) || [];
+
+  // Get stats
   const [eventsCount, feedbackCount, analytics, recentFeedback] =
     await Promise.all([
       supabase
         .from("events")
         .select("*", { count: "exact", head: true })
         .eq("created_by", user.id),
-      supabase.from("feedback").select("*", { count: "exact", head: true }),
-      supabase
-        .from("feedback_analytics")
-        .select("*")
-        .order("avg_rating", { ascending: false }) // Top rated
-        .limit(5),
 
-      supabase
-        .from("feedback")
-        .select(
-          `
-            *,
-            profiles:user_id (full_name)
-        `,
-        )
-        .order("created_at", { ascending: false })
-        .limit(5),
+      // Filter total feedback to only my events
+      // Since supabase doesn't support complex joins in count easily without RPC or standard joins,
+      // we can use the `in` filter matching event_id. 
+      // If eventIds is empty, we must handle it (empty array in .in() might error or return empty, usually error if empty list).
+      eventIds.length > 0
+        ? supabase.from("feedback").select("*", { count: "exact", head: true }).in("event_id", eventIds)
+        : { count: 0 },
+
+      // Filter analytics to my events
+      eventIds.length > 0
+        ? supabase
+          .from("feedback_analytics")
+          .select("*")
+          .in("event_id", eventIds) // Filter by my events
+          .order("avg_rating", { ascending: false })
+          .limit(5)
+        : { data: [] },
+
+      // Filter recent feedback to my events
+      eventIds.length > 0
+        ? supabase
+          .from("feedback")
+          .select(
+            `
+                *,
+                profiles:user_id (full_name)
+            `,
+          )
+          .in("event_id", eventIds) // Filter by my events
+          .order("created_at", { ascending: false })
+          .limit(5)
+        : { data: [] },
     ]);
 
   return {
@@ -81,11 +106,11 @@ export default async function DashboardPage() {
           value={
             data.topEvents.length > 0
               ? (
-                  data.topEvents.reduce(
-                    (acc, e) => acc + (e.avg_rating || 0),
-                    0,
-                  ) / data.topEvents.length
-                ).toFixed(1)
+                data.topEvents.reduce(
+                  (acc, e) => acc + (e.avg_rating || 0),
+                  0,
+                ) / data.topEvents.length
+              ).toFixed(1)
               : "0"
           }
           icon="⭐"

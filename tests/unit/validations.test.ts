@@ -10,6 +10,7 @@ describe("Event Schema Validation", () => {
       location: "Test Location",
       start_date: "2025-01-01T10:00:00Z",
       end_date: "2025-01-01T17:00:00Z",
+      target_audience: "all",
     };
 
     expect(() => eventSchema.parse(validData)).not.toThrow();

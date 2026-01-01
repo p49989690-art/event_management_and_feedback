@@ -53,6 +53,10 @@ export function EventForm({
       await onSubmit(data);
       toast.success(isEditing ? "Event updated successfully!" : "Event created successfully!");
     } catch (error) {
+      // Ignore NEXT_REDIRECT error as it's the expected behavior for successful server actions that redirect
+      if (error instanceof Error && (error.message.includes("NEXT_REDIRECT") || error.message === "NEXT_REDIRECT")) {
+        return;
+      }
       console.error("Error submitting form:", error);
       toast.error(error instanceof Error ? error.message : "Failed to save event");
     } finally {

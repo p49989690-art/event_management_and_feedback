@@ -143,6 +143,14 @@ export async function getEvents(filters?: {
 }) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
   let query = supabase
     .from("events")
     .select(
@@ -154,6 +162,7 @@ export async function getEvents(filters?: {
       )
     `,
     )
+    .eq("created_by", user.id) // Filter by current user
     .order("start_date", { ascending: false });
 
   if (filters?.status) {
