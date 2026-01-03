@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { EventsListWithFilters } from "@/components/events/events-list-with-filters";
 
+export const dynamic = "force-dynamic";
+
 export default async function EventsPage() {
   const events = await getEvents();
 

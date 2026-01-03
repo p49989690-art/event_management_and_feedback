@@ -5,6 +5,8 @@ import { AnalyticsChart } from "@/components/dashboard/analytics-chart";
 import { RecentFeedback } from "@/components/dashboard/recent-feedback";
 import { EventOverview } from "@/components/dashboard/event-overview";
 
+export const dynamic = "force-dynamic";
+
 export async function getDashboardData() {
   const supabase = await createClient();
 
