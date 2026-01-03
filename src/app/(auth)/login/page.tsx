@@ -53,8 +53,16 @@ export default async function LoginPage({
                 className="dark:bg-neutral-800 dark:border-neutral-700"
               />
             </div>
-            <div className="space-y-2">
+            <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="space-y-2">
               <Input
                 id="password"
                 name="password"
@@ -77,6 +85,6 @@ export default async function LoginPage({
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </div >
   )
 }
